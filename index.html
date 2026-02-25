@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBI Digital & Insurance Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 p-4 md:p-10">
+
+    <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+        <div class="bg-gradient-to-r from-blue-900 to-blue-700 p-6 text-white text-center">
+            <h1 class="text-2xl font-bold uppercase tracking-wide">Banking Metrics Dashboard</h1>
+            <p class="opacity-80">YONO | WhatsApp | ATM | PAI Insurance</p>
+        </div>
+
+        <div class="p-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <div class="md:col-span-2 space-y-6">
+                    <h2 class="text-lg font-semibold text-gray-700 border-b pb-2">Log Daily Entries</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-3">
+                            <label class="block text-sm font-bold text-gray-600 italic">Digital & ATM</label>
+                            <input type="number" id="yonoInput" class="w-full p-2 border rounded-lg" placeholder="Yono Registrations">
+                            <input type="number" id="waInput" class="w-full p-2 border rounded-lg" placeholder="WhatsApp Banking">
+                            <input type="number" id="atmInput" class="w-full p-2 border rounded-lg bg-yellow-50" placeholder="ATM via YONO App">
+                        </div>
+                        <div class="space-y-3">
+                            <label class="block text-sm font-bold text-gray-600 italic">Transactions</label>
+                            <input type="number" id="finInput" class="w-full p-2 border rounded-lg" placeholder="Financial Txns">
+                            <input type="number" id="nonFinInput" class="w-full p-2 border rounded-lg" placeholder="Non-Financial Txns">
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 p-5 rounded-xl border border-blue-200">
+                        <label class="block text-sm font-bold text-blue-900 mb-3 uppercase">PAI Insurance Plans</label>
+                        <div class="grid grid-cols-3 gap-4">
+                            <input type="number" id="pai1k" class="w-full p-2 border border-blue-300 rounded-lg" placeholder="₹1000 Qty">
+                            <input type="number" id="pai2k" class="w-full p-2 border border-blue-300 rounded-lg" placeholder="₹2000 Qty">
+                            <input type="number" id="pai3k" class="w-full p-2 border border-blue-300 rounded-lg" placeholder="₹3000 Qty">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button onclick="saveData()" class="flex-1 bg-blue-800 hover:bg-blue-900 text-white font-bold py-4 rounded-xl shadow-lg transition">
+                            SAVE & UPDATE
+                        </button>
+                        <button onclick="downloadCSV()" class="bg-green-600 hover:bg-green-700 text-white px-6 rounded-xl shadow-lg font-bold flex items-center justify-center">
+                            EXPORT EXCEL
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-slate-100 p-6 rounded-xl space-y-4 border border-gray-300 shadow-inner">
+                    <h2 class="text-lg font-semibold text-gray-700 border-b border-gray-300 pb-2 text-center">Grand Totals</h2>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between"><span>Yono:</span> <b id="totalYono" class="text-blue-800">0</b></div>
+                        <div class="flex justify-between"><span>WhatsApp:</span> <b id="totalWA" class="text-blue-600">0</b></div>
+                        <div class="flex justify-between p-1 bg-yellow-100 rounded"><span>ATM Apps:</span> <b id="totalATM" class="text-orange-700">0</b></div>
+                        <div class="flex justify-between"><span>Financial:</span> <b id="totalFin">0</b></div>
+                        <div class="flex justify-between"><span>Non-Financial:</span> <b id="totalNonFin">0</b></div>
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-300">
+                        <p class="text-[10px] font-bold text-blue-800 uppercase mb-2">PAI Summary</p>
+                        <div class="grid grid-cols-3 gap-1 text-center text-xs">
+                            <div class="bg-white p-1 rounded border">1K: <b id="disp1k">0</b></div>
+                            <div class="bg-white p-1 rounded border">2K: <b id="disp2k">0</b></div>
+                            <div class="bg-white p-1 rounded border">3K: <b id="disp3k">0</b></div>
+                        </div>
+                    </div>
+
+                    <button onclick="resetData()" class="w-full mt-6 text-[10px] text-red-500 hover:text-red-700 uppercase tracking-widest font-bold">Clear All Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = updateDisplay;
+
+        function saveData() {
+            let data = JSON.parse(localStorage.getItem('bankingStatsFull')) || { yono: 0, wa: 0, atm: 0, fin: 0, nonFin: 0, p1: 0, p2: 0, p3: 0 };
+            data.yono += parseInt(document.getElementById('yonoInput').value || 0);
+            data.wa += parseInt(document.getElementById('waInput').value || 0);
+            data.atm += parseInt(document.getElementById('atmInput').value || 0);
+            data.fin += parseInt(document.getElementById('finInput').value || 0);
+            data.nonFin += parseInt(document.getElementById('nonFinInput').value || 0);
+            data.p1 += parseInt(document.getElementById('pai1k').value || 0);
+            data.p2 += parseInt(document.getElementById('pai2k').value || 0);
+            data.p3 += parseInt(document.getElementById('pai3k').value || 0);
+
+            localStorage.setItem('bankingStatsFull', JSON.stringify(data));
+            document.querySelectorAll('input').forEach(i => i.value = "");
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            let data = JSON.parse(localStorage.getItem('bankingStatsFull')) || { yono: 0, wa: 0, atm: 0, fin: 0, nonFin: 0, p1: 0, p2: 0, p3: 0 };
+            document.getElementById('totalYono').innerText = data.yono;
+            document.getElementById('totalWA').innerText = data.wa;
+            document.getElementById('totalATM').innerText = data.atm;
+            document.getElementById('totalFin').innerText = data.fin;
+            document.getElementById('totalNonFin').innerText = data.nonFin;
+            document.getElementById('disp1k').innerText = data.p1;
+            document.getElementById('disp2k').innerText = data.p2;
+            document.getElementById('disp3k').innerText = data.p3;
+        }
+
+        function downloadCSV() {
+            let data = JSON.parse(localStorage.getItem('bankingStatsFull')) || {};
+            let date = new Date().toLocaleDateString();
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Metric,Total Count\r\n";
+            csvContent += `Report Date,${date}\r\n`;
+            Object.keys(data).forEach(key => {
+                csvContent += `${key.toUpperCase()},${data[key]}\r\n`;
+            });
+
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Banking_Report_${date}.csv`);
+            document.body.appendChild(link);
+            link.click();
+        }
+
+        function resetData() {
+            if(confirm("Delete all history?")) {
+                localStorage.removeItem('bankingStatsFull');
+                updateDisplay();
+            }
+        }
+    </script>
+</body>
+</html>
