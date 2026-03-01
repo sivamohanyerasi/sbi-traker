@@ -5,63 +5,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SBI Digital & Insurance Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+        }
+    </style>
 </head>
 <body class="bg-slate-50 p-4 md:p-10">
 
     <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
         <div class="bg-gradient-to-r from-blue-900 to-blue-700 p-6 text-white text-center">
             <h1 class="text-2xl font-bold uppercase tracking-wide">Banking Metrics Dashboard</h1>
-            <p class="opacity-80">YONO | WhatsApp | ATM | PAI Insurance</p>
+            <p class="opacity-80 text-sm">Official Branch Performance Tracker</p>
+        </div>
+
+        <div class="sticky-header border-b border-gray-200 px-6 py-3 shadow-sm flex flex-wrap gap-4 justify-between items-center">
+            <div class="flex flex-col">
+                <h2 class="text-sm font-bold text-gray-500 uppercase">Data Entry</h2>
+                <p id="lastSaved" class="text-[10px] text-green-600 font-bold italic">Last Update: Never</p>
+            </div>
+            <div class="flex gap-2 w-full sm:w-auto">
+                <button onclick="saveData()" class="flex-1 sm:flex-none bg-blue-800 hover:bg-blue-900 text-white text-xs font-bold py-2 px-5 rounded-lg shadow transition-all active:scale-95 uppercase">
+                    Save & Update
+                </button>
+                <button onclick="downloadCSV()" class="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2 px-5 rounded-lg shadow transition-all active:scale-95 uppercase">
+                    Export Excel
+                </button>
+            </div>
         </div>
 
         <div class="p-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 
-                <div class="md:col-span-2 space-y-6">
-                    <h2 class="text-lg font-semibold text-gray-700 border-b pb-2">Log Daily Entries</h2>
+                <div class="md:col-span-2 space-y-8">
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="space-y-3">
-                            <label class="block text-sm font-bold text-gray-600 italic">Digital & ATM</label>
-                            <input type="number" id="yonoInput" class="w-full p-2 border rounded-lg" placeholder="Yono Registrations">
-                            <input type="number" id="waInput" class="w-full p-2 border rounded-lg" placeholder="WhatsApp Banking">
-                            <input type="number" id="atmInput" class="w-full p-2 border rounded-lg bg-yellow-50" placeholder="ATM via YONO App">
+                            <label class="block text-sm font-bold text-gray-600 italic">Digital & CBDC</label>
+                            <input type="number" id="yonoInput" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none" placeholder="Yono Registrations">
+                            <input type="number" id="waInput" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none" placeholder="WhatsApp Banking">
+                            <input type="number" id="cbdcInput" class="w-full p-2 border rounded-lg bg-green-50 focus:ring-2 focus:ring-green-400 outline-none" placeholder="e-Rupee (CBDC)">
                         </div>
+                        
                         <div class="space-y-3">
-                            <label class="block text-sm font-bold text-gray-600 italic">Transactions</label>
+                            <label class="block text-sm font-bold text-gray-600 italic">Transactions & Services</label>
                             <input type="number" id="finInput" class="w-full p-2 border rounded-lg" placeholder="Financial Txns">
                             <input type="number" id="nonFinInput" class="w-full p-2 border rounded-lg" placeholder="Non-Financial Txns">
+                            <input type="number" id="atmInput" class="w-full p-2 border rounded-lg bg-yellow-50" placeholder="ATM Request">
+                            <input type="number" id="chequeInput" class="w-full p-2 border rounded-lg border-blue-400" placeholder="Cheque Book Requests">
                         </div>
                     </div>
 
-                    <div class="bg-blue-50 p-5 rounded-xl border border-blue-200">
-                        <label class="block text-sm font-bold text-blue-900 mb-3 uppercase">PAI Insurance Plans</label>
-                        <div class="grid grid-cols-3 gap-4">
-                            <input type="number" id="pai1k" class="w-full p-2 border border-blue-300 rounded-lg" placeholder="₹1000 Qty">
-                            <input type="number" id="pai2k" class="w-full p-2 border border-blue-300 rounded-lg" placeholder="₹2000 Qty">
-                            <input type="number" id="pai3k" class="w-full p-2 border border-blue-300 rounded-lg" placeholder="₹3000 Qty">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-blue-50 p-5 rounded-xl border border-blue-200">
+                            <label class="block text-sm font-bold text-blue-900 mb-3 uppercase">PAI Insurance Plans</label>
+                            <div class="grid grid-cols-3 gap-4">
+                                <input type="number" id="pai1k" class="w-full p-2 border border-blue-300 rounded-lg" placeholder="₹1k">
+                                <input type="number" id="pai2k" class="w-full p-2 border border-blue-300 rounded-lg" placeholder="₹2k">
+                                <input type="number" id="pai3k" class="w-full p-2 border border-blue-300 rounded-lg" placeholder="₹3k">
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                                <label class="block text-sm font-bold text-gray-700 mb-2 uppercase">Feedback & Activation</label>
+                                <input type="number" id="feedbackInput" class="w-full p-2 border border-gray-300 rounded-lg mb-2" placeholder="Feedback Count">
+                                <input type="number" id="inopInput" class="w-full p-2 border border-red-200 rounded-lg bg-red-50" placeholder="Inoperative Activation">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="flex gap-4">
-                        <button onclick="saveData()" class="flex-1 bg-blue-800 hover:bg-blue-900 text-white font-bold py-4 rounded-xl shadow-lg transition">
-                            SAVE & UPDATE
-                        </button>
-                        <button onclick="downloadCSV()" class="bg-green-600 hover:bg-green-700 text-white px-6 rounded-xl shadow-lg font-bold flex items-center justify-center">
-                            EXPORT EXCEL
+                    <div class="flex gap-4 pt-4 border-t">
+                        <button onclick="saveData()" class="flex-1 bg-blue-800 hover:bg-blue-900 text-white font-bold py-4 rounded-xl shadow-lg transition uppercase">
+                            Finalize & Update
                         </button>
                     </div>
                 </div>
 
-                <div class="bg-slate-100 p-6 rounded-xl space-y-4 border border-gray-300 shadow-inner">
-                    <h2 class="text-lg font-semibold text-gray-700 border-b border-gray-300 pb-2 text-center">Grand Totals</h2>
+                <div class="bg-slate-100 p-6 rounded-xl space-y-4 border border-gray-300 shadow-inner h-fit">
+                    <h2 class="text-lg font-semibold text-gray-700 border-b border-gray-300 pb-2 text-center uppercase">Grand Totals</h2>
                     
                     <div class="space-y-3 text-sm">
                         <div class="flex justify-between"><span>Yono:</span> <b id="totalYono" class="text-blue-800">0</b></div>
                         <div class="flex justify-between"><span>WhatsApp:</span> <b id="totalWA" class="text-blue-600">0</b></div>
-                        <div class="flex justify-between p-1 bg-yellow-100 rounded"><span>ATM Apps:</span> <b id="totalATM" class="text-orange-700">0</b></div>
+                        <div class="flex justify-between p-1 bg-green-100 rounded"><span>e-Rupee:</span> <b id="totalCBDC" class="text-green-800">0</b></div>
+                        <hr class="border-gray-300">
                         <div class="flex justify-between"><span>Financial:</span> <b id="totalFin">0</b></div>
-                        <div class="flex justify-between"><span>Non-Financial:</span> <b id="totalNonFin">0</b></div>
+                        <div class="flex justify-between"><span>Non-Fin:</span> <b id="totalNonFin">0</b></div>
+                        <div class="flex justify-between p-1 bg-yellow-100 rounded"><span>ATM Request:</span> <b id="totalATM" class="text-orange-700">0</b></div>
+                        <div class="flex justify-between font-bold text-blue-900"><span>Cheque Req:</span> <b id="totalCheque">0</b></div>
+                        <hr class="border-gray-300">
+                        <div class="flex justify-between font-bold text-purple-800"><span>Total Feedback:</span> <b id="totalFeedback">0</b></div>
+                        <div class="flex justify-between font-bold text-red-700"><span>Inoperative:</span> <b id="totalInop">0</b></div>
                     </div>
 
                     <div class="pt-4 border-t border-gray-300">
@@ -80,57 +119,83 @@
     </div>
 
     <script>
-        window.onload = updateDisplay;
+        // Load data and last saved time on startup
+        window.onload = function() {
+            updateDisplay();
+            const lastUpdate = localStorage.getItem('lastSavedTime');
+            if(lastUpdate) {
+                document.getElementById('lastSaved').innerText = "Last Update: " + lastUpdate;
+            }
+        };
 
         function saveData() {
-            let data = JSON.parse(localStorage.getItem('bankingStatsFull')) || { yono: 0, wa: 0, atm: 0, fin: 0, nonFin: 0, p1: 0, p2: 0, p3: 0 };
+            let data = JSON.parse(localStorage.getItem('bankingStatsFull')) || { yono: 0, wa: 0, atm: 0, fin: 0, nonFin: 0, p1: 0, p2: 0, p3: 0, cbdc: 0, cheque: 0, feedback: 0, inop: 0 };
+            
+            // Increment totals
             data.yono += parseInt(document.getElementById('yonoInput').value || 0);
             data.wa += parseInt(document.getElementById('waInput').value || 0);
+            data.cbdc += parseInt(document.getElementById('cbdcInput').value || 0);
             data.atm += parseInt(document.getElementById('atmInput').value || 0);
             data.fin += parseInt(document.getElementById('finInput').value || 0);
             data.nonFin += parseInt(document.getElementById('nonFinInput').value || 0);
+            data.cheque += parseInt(document.getElementById('chequeInput').value || 0);
             data.p1 += parseInt(document.getElementById('pai1k').value || 0);
             data.p2 += parseInt(document.getElementById('pai2k').value || 0);
             data.p3 += parseInt(document.getElementById('pai3k').value || 0);
+            data.feedback += parseInt(document.getElementById('feedbackInput').value || 0);
+            data.inop += parseInt(document.getElementById('inopInput').value || 0);
 
+            // Generate 12-hour format time (e.g., 02:30:45 PM)
+            const now = new Date().toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit', 
+                hour12: true 
+            });
+
+            // Persist to LocalStorage
             localStorage.setItem('bankingStatsFull', JSON.stringify(data));
+            localStorage.setItem('lastSavedTime', now);
+            
+            // UI Feedback
+            document.getElementById('lastSaved').innerText = "Last Update: " + now;
             document.querySelectorAll('input').forEach(i => i.value = "");
             updateDisplay();
         }
 
         function updateDisplay() {
-            let data = JSON.parse(localStorage.getItem('bankingStatsFull')) || { yono: 0, wa: 0, atm: 0, fin: 0, nonFin: 0, p1: 0, p2: 0, p3: 0 };
+            let data = JSON.parse(localStorage.getItem('bankingStatsFull')) || { yono: 0, wa: 0, atm: 0, fin: 0, nonFin: 0, p1: 0, p2: 0, p3: 0, cbdc: 0, cheque: 0, feedback: 0, inop: 0 };
+            
             document.getElementById('totalYono').innerText = data.yono;
             document.getElementById('totalWA').innerText = data.wa;
+            document.getElementById('totalCBDC').innerText = data.cbdc;
             document.getElementById('totalATM').innerText = data.atm;
             document.getElementById('totalFin').innerText = data.fin;
             document.getElementById('totalNonFin').innerText = data.nonFin;
+            document.getElementById('totalCheque').innerText = data.cheque;
             document.getElementById('disp1k').innerText = data.p1;
             document.getElementById('disp2k').innerText = data.p2;
             document.getElementById('disp3k').innerText = data.p3;
+            document.getElementById('totalFeedback').innerText = data.feedback;
+            document.getElementById('totalInop').innerText = data.inop;
         }
 
         function downloadCSV() {
             let data = JSON.parse(localStorage.getItem('bankingStatsFull')) || {};
             let date = new Date().toLocaleDateString();
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Metric,Total Count\r\n";
-            csvContent += `Report Date,${date}\r\n`;
-            Object.keys(data).forEach(key => {
-                csvContent += `${key.toUpperCase()},${data[key]}\r\n`;
-            });
-
-            var encodedUri = encodeURI(csvContent);
+            let csvContent = "data:text/csv;charset=utf-8,Metric,Total\r\n";
+            Object.keys(data).forEach(key => csvContent += `${key.toUpperCase()},${data[key]}\r\n`);
             var link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Banking_Report_${date}.csv`);
-            document.body.appendChild(link);
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", `Branch_Report_${date}.csv`);
             link.click();
         }
 
         function resetData() {
             if(confirm("Delete all history?")) {
                 localStorage.removeItem('bankingStatsFull');
+                localStorage.removeItem('lastSavedTime');
+                document.getElementById('lastSaved').innerText = "Last Update: Never";
                 updateDisplay();
             }
         }
