@@ -48,7 +48,7 @@
 
         <div class="sticky-header border-b border-gray-200 px-6 py-3 shadow-sm flex justify-between items-center">
             <p id="lastSaved" class="text-[10px] text-green-600 font-bold italic uppercase">Status: System Ready</p>
-            <span class="text-[10px] text-gray-400 font-bold uppercase underline decoration-blue-500">Log Mode: Min -5 Enabled</span>
+            <span class="text-[10px] text-gray-400 font-bold uppercase">Precise Time Logging Active</span>
         </div>
 
         <div class="p-6 md:p-8">
@@ -123,13 +123,20 @@
             'Feedback': 'feedbackInput', 'Inop Act': 'inopInput'
         };
 
-        window.onload = updateDisplay;
+        window.onload = function() {
+            updateDisplay();
+            // Restore persistent Last Saved time
+            const lastTime = localStorage.getItem('sbi_v9_last_time');
+            if (lastTime) {
+                document.getElementById('lastSaved').innerText = "Last Saved: " + lastTime;
+            }
+        };
 
         function step(id, val) {
             const el = document.getElementById(id);
             let current = parseInt(el.value) || 0;
             let result = current + val;
-            if (result < -5) result = -5; // Limit to -5
+            if (result < -5) result = -5;
             el.value = result;
             if (result < 0) { el.classList.add('text-negative'); } 
             else { el.classList.remove('text-negative'); }
@@ -157,7 +164,11 @@
             });
 
             if (!hasEntry) return;
+            
+            // Persistent storage for stats and time
             localStorage.setItem('sbi_v9_stats', JSON.stringify(store));
+            localStorage.setItem('sbi_v9_last_time', time);
+            
             document.getElementById('lastSaved').innerText = "Last Saved: " + time;
             updateDisplay();
         }
@@ -213,6 +224,7 @@
         function resetData() {
             if(confirm("Confirm: Clear all stored branch metrics?")) {
                 localStorage.removeItem('sbi_v9_stats');
+                localStorage.removeItem('sbi_v9_last_time');
                 location.reload();
             }
         }
